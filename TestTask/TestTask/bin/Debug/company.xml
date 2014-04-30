@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<company>
+		<ecologist>
+				<name>Иванов</name>
+				<probe>
+						<place>колхоз светлый путь</place>
+						<day>09</day>
+						<month>06</month>
+						<year>2012</year>
+				</probe>
+				<probe>
+						<place>колхоз светлый путь</place>
+						<day>12</day>
+						<month>07</month>
+						<year>2011</year>
+				</probe>
+		</ecologist>
+		<ecologist>
+				<name>Петров</name>
+				<probe>
+						<place>водоочистные сооружения</place>
+						<day>11</day>
+						<month>09</month>
+						<year>2013</year>
+				</probe>
+				<probe>
+						<place>водоочистные сооружения</place>
+						<day>11</day>
+						<month>02</month>
+						<year>2014</year>
+				</probe>
+		</ecologist>
+</company>
