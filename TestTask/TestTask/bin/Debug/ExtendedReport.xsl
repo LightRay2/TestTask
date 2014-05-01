@@ -5,8 +5,24 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
   <xsl:template match="/">
     <html>
+      <!--...........styles............................................................-->
+      <head>
+        <style media="screen" type="text/css">
+
+          table{
+          border-collapse: collapse;
+          }
+
+          td {
+          border: 1px solid;
+          padding: 2px 8px 2px 8px;
+          font-size : medium;
+          }
+        </style>
+      </head>
+      <!--.......................body.....................................................-->
       <body>
-        <h2>Расширенный отчет</h2>
+        <h3>Расширенный отчет</h3>
         <table>
           <tr>
             <td></td>
