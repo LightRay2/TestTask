@@ -8,7 +8,7 @@ using System.IO;
 
 namespace TestTask
 {
-    class ConverterXmlToHtml
+    class ConverterXmlToHtml:IConverterXmlToHtml
     {
         public void ConverUsingXsl(string inputXml, string xsltString, string outputHtml)
         {

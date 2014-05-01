@@ -37,7 +37,10 @@
             this.MIFormSimpleReport = new System.Windows.Forms.ToolStripMenuItem();
             this.MIFormExtendedReport = new System.Windows.Forms.ToolStripMenuItem();
             this.GridEcologists = new System.Windows.Forms.DataGridView();
+            this.EcoName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.GridProbes = new System.Windows.Forms.DataGridView();
+            this.Place = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Date = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LEcologists = new System.Windows.Forms.Label();
             this.LProbes = new System.Windows.Forms.Label();
             this.BDeleteEcologist = new System.Windows.Forms.Button();
@@ -62,10 +65,9 @@
             this.GroupChangeProbe = new System.Windows.Forms.GroupBox();
             this.DialogSaveFile = new System.Windows.Forms.SaveFileDialog();
             this.DialogOpenFile = new System.Windows.Forms.OpenFileDialog();
-            this.EcoName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Place = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Date = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.StatusStrip = new System.Windows.Forms.StatusStrip();
+            this.MINewProject = new System.Windows.Forms.ToolStripMenuItem();
+            this.PBReport = new System.Windows.Forms.ProgressBar();
             this.MenuMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GridEcologists)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.GridProbes)).BeginInit();
@@ -87,6 +89,7 @@
             // данныеToolStripMenuItem
             // 
             this.данныеToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MINewProject,
             this.MILoadData,
             this.MISaveData,
             this.MISaveDataAs});
@@ -129,16 +132,20 @@
             this.MIFormSimpleReport.Name = "MIFormSimpleReport";
             this.MIFormSimpleReport.Size = new System.Drawing.Size(374, 26);
             this.MIFormSimpleReport.Text = "Сформировать простой отчет";
+            this.MIFormSimpleReport.Click += new System.EventHandler(this.MIFormSimpleReport_Click);
             // 
             // MIFormExtendedReport
             // 
             this.MIFormExtendedReport.Name = "MIFormExtendedReport";
             this.MIFormExtendedReport.Size = new System.Drawing.Size(374, 26);
             this.MIFormExtendedReport.Text = "Сформировать расширенный отчет";
+            this.MIFormExtendedReport.Click += new System.EventHandler(this.MIFormExtendedReport_Click);
             // 
             // GridEcologists
             // 
             this.GridEcologists.AllowUserToAddRows = false;
+            this.GridEcologists.AllowUserToDeleteRows = false;
+            this.GridEcologists.AllowUserToResizeRows = false;
             this.GridEcologists.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.GridEcologists.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.EcoName});
@@ -149,6 +156,14 @@
             this.GridEcologists.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.GridEcologists.Size = new System.Drawing.Size(221, 170);
             this.GridEcologists.TabIndex = 1;
+            this.GridEcologists.SelectionChanged += new System.EventHandler(this.GridEcologists_SelectionChanged);
+            // 
+            // EcoName
+            // 
+            this.EcoName.HeaderText = "ФИО";
+            this.EcoName.Name = "EcoName";
+            this.EcoName.ReadOnly = true;
+            this.EcoName.Width = 200;
             // 
             // GridProbes
             // 
@@ -164,6 +179,19 @@
             this.GridProbes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.GridProbes.Size = new System.Drawing.Size(428, 174);
             this.GridProbes.TabIndex = 2;
+            // 
+            // Place
+            // 
+            this.Place.HeaderText = "Место";
+            this.Place.Name = "Place";
+            this.Place.ReadOnly = true;
+            this.Place.Width = 300;
+            // 
+            // Date
+            // 
+            this.Date.HeaderText = "Время";
+            this.Date.Name = "Date";
+            this.Date.ReadOnly = true;
             // 
             // LEcologists
             // 
@@ -211,6 +239,7 @@
             this.BDeleteProbe.TabIndex = 7;
             this.BDeleteProbe.Text = "Удалить запись";
             this.BDeleteProbe.UseVisualStyleBackColor = true;
+            this.BDeleteProbe.Click += new System.EventHandler(this.BDeleteProbe_Click);
             // 
             // BChangeProbe
             // 
@@ -220,6 +249,7 @@
             this.BChangeProbe.TabIndex = 8;
             this.BChangeProbe.Text = "Изменить запись";
             this.BChangeProbe.UseVisualStyleBackColor = true;
+            this.BChangeProbe.Click += new System.EventHandler(this.BChangeProbe_Click);
             // 
             // TBEcoName
             // 
@@ -246,6 +276,7 @@
             this.BProbeOK.TabIndex = 12;
             this.BProbeOK.Text = "ОК";
             this.BProbeOK.UseVisualStyleBackColor = true;
+            this.BProbeOK.Click += new System.EventHandler(this.BProbeOK_Click);
             // 
             // TBProbePlace
             // 
@@ -375,26 +406,6 @@
             // 
             this.DialogOpenFile.FileName = "openFileDialog1";
             // 
-            // EcoName
-            // 
-            this.EcoName.HeaderText = "ФИО";
-            this.EcoName.Name = "EcoName";
-            this.EcoName.ReadOnly = true;
-            this.EcoName.Width = 200;
-            // 
-            // Place
-            // 
-            this.Place.HeaderText = "Место";
-            this.Place.Name = "Place";
-            this.Place.ReadOnly = true;
-            this.Place.Width = 300;
-            // 
-            // Date
-            // 
-            this.Date.HeaderText = "Время";
-            this.Date.Name = "Date";
-            this.Date.ReadOnly = true;
-            // 
             // StatusStrip
             // 
             this.StatusStrip.Location = new System.Drawing.Point(0, 600);
@@ -403,11 +414,28 @@
             this.StatusStrip.TabIndex = 25;
             this.StatusStrip.Text = "готово";
             // 
+            // MINewProject
+            // 
+            this.MINewProject.Name = "MINewProject";
+            this.MINewProject.Size = new System.Drawing.Size(229, 26);
+            this.MINewProject.Text = "Новый Проект";
+            this.MINewProject.Click += new System.EventHandler(this.MINewProject_Click);
+            // 
+            // PBReport
+            // 
+            this.PBReport.Location = new System.Drawing.Point(171, 0);
+            this.PBReport.Name = "PBReport";
+            this.PBReport.Size = new System.Drawing.Size(261, 29);
+            this.PBReport.Step = 8;
+            this.PBReport.TabIndex = 26;
+            this.PBReport.Value = 25;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(923, 622);
+            this.Controls.Add(this.PBReport);
             this.Controls.Add(this.StatusStrip);
             this.Controls.Add(this.GroupChangeProbe);
             this.Controls.Add(this.GroupChangeEco);
@@ -479,6 +507,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Place;
         private System.Windows.Forms.DataGridViewTextBoxColumn Date;
         private System.Windows.Forms.StatusStrip StatusStrip;
+        private System.Windows.Forms.ToolStripMenuItem MINewProject;
+        private System.Windows.Forms.ProgressBar PBReport;
 
     }
 }

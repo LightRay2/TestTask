@@ -26,42 +26,35 @@ namespace TestTask
         {
             InitializeComponent();
 
-            IRepository repo = new XMLRepository();
-            _cont = new Controller(this,repo);
-
-            /*
-            List<Ecologist> ecos = repo.ReadAllEcologists("company.xml");
-            repo.WriteAllEcologists("company2.xml", ecos);
-
-            ConverterXmlToHtml conv = new ConverterXmlToHtml();
-            conv.ConverUsingXsl("company.xml", Resources.simpleReport, "companySimple.html");
-            conv.ConverUsingXsl("company.xml", Resources.ExtendedReport, "companyExtended.html");
-            */
+            //форма не должна знать, как создавать контроллер
+            _cont = ControllerFactory.CreateController(this);
         }
 
-        void Message(string text)
-        {
-            StatusStrip.Text = text;
-        }
+        
 
         private void FormMain_Load(object sender, EventArgs e)
         {
             GroupChangeEco.Visible = false;
             GroupChangeProbe.Visible = false;
+            PBReport.Visible = false;
+            FillProbeComboBoxes();
+            this.Size = new Size(
+                GroupChangeProbe.Location.X + GroupChangeProbe.Size.Width + 200,
+                GroupChangeProbe.Location.Y + GroupChangeProbe.Size.Height + 200
+                );
         }
 
-        #region methods for edit panel
+        
 
-
-        private void BAddProbe_Click(object sender, EventArgs e)
+        #region Main menu - data(to controller)
+        private void MINewProject_Click(object sender, EventArgs e)
         {
-            GroupChangeProbe.Visible = !GroupChangeProbe.Visible;
+            _cont.StartNewProject();
         }
-        #endregion
 
-        #region Main menu - data
         private void MILoadData_Click(object sender, EventArgs e)
         {
+            DialogOpenFile.Filter = "*.xml";
             DialogOpenFile.FileName = _cont.LastXmlFile;
             if (DialogOpenFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -71,6 +64,7 @@ namespace TestTask
 
         private void MISaveDataAs_Click(object sender, EventArgs e)
         {
+            DialogSaveFile.Filter = "*.xml";
             DialogSaveFile.FileName = _cont.LastXmlFile;
             if (DialogSaveFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -84,7 +78,130 @@ namespace TestTask
         }
         #endregion
 
-        #region public methods for controller
+        #region user events editing ecologistGrid (to controller)
+        private void BDeleteEcologist_Click(object sender, EventArgs e)
+        {
+            List<int> indexes = new List<int>();
+            foreach (DataGridViewRow row in GridEcologists.SelectedRows)
+            {
+                indexes.Add(GridEcologists.Rows.IndexOf(row));
+            }
+            _cont.DeleteEcologists(indexes);
+        }
+
+        private void BChangeEcologist_Click(object sender, EventArgs e)
+        {
+            if (GridEcologists.SelectedRows.Count > 0)
+            {
+                TBEcoName.Text = GridEcologists.SelectedRows[0].Cells[0].Value.ToString();
+                GroupChangeEco.Visible = _addNewEcologist || !GroupChangeEco.Visible;
+                _addNewEcologist = false;
+            }
+        }
+
+
+        private void BAddEcologist_Click(object sender, EventArgs e)
+        {
+            GroupChangeEco.Visible = !_addNewEcologist || !GroupChangeEco.Visible;
+            _addNewEcologist = true;
+            TBEcoName.Text = "эколог" + GridEcologists.Rows.Count.ToString();
+        }
+
+        private void BEcoOK_Click(object sender, EventArgs e)
+        {
+            if (_addNewEcologist)
+            {
+                _cont.AddEcologist(TBEcoName.Text);
+                GroupChangeEco.Visible = false;
+                GridEcologists.ClearSelection();
+                GridEcologists.Rows[GridEcologists.Rows.Count - 1].Selected = true;
+            }
+            else
+            {
+                if (GridEcologists.SelectedRows.Count > 0)
+                {
+                    _cont.ChangeEcologist(SelectedEco(), TBEcoName.Text);
+                }
+                GroupChangeEco.Visible = false;
+            }
+        }
+        #endregion
+
+        #region user events editing probes (to controller)
+
+        private void BDeleteProbe_Click(object sender, EventArgs e)
+        {
+            List<int> indexes = new List<int>();
+            foreach (DataGridViewRow row in GridProbes.SelectedRows)
+            {
+                indexes.Add(GridProbes.Rows.IndexOf(row));
+            }
+            _cont.DeleteProbes(SelectedEco(), indexes);
+        }
+
+        private void BChangeProbe_Click(object sender, EventArgs e)
+        {
+            if (GridProbes.SelectedRows.Count > 0)
+            {
+                TBProbePlace.Text = GridProbes.SelectedRows[0].Cells[0].Value.ToString();
+                string date = GridProbes.SelectedRows[0].Cells[1].Value.ToString();
+                CBProbeDay.SelectedItem = date.Substring(0, 2);
+                CBProbeMonth.SelectedItem = date.Substring(3, 2);
+                CBProbeYear.SelectedItem = date.Substring(6, 4);
+
+                GroupChangeProbe.Visible = _addNewProbe || !GroupChangeProbe.Visible;
+                _addNewProbe = false;
+            }
+        }
+
+        private void BAddProbe_Click(object sender, EventArgs e)
+        {
+            TBProbePlace.Text = "место" + GridProbes.Rows.Count.ToString();
+            CBProbeDay.SelectedIndex = 0;
+            CBProbeMonth.SelectedIndex = 0;
+            CBProbeYear.SelectedIndex = 0;
+
+            GroupChangeProbe.Visible = !_addNewProbe || !GroupChangeProbe.Visible;
+            _addNewProbe = true;
+        }
+
+        private void BProbeOK_Click(object sender, EventArgs e)
+        {
+            if (_addNewProbe)
+            {
+                _cont.AddProbe(SelectedEco(), TBProbePlace.Text,
+                    Int32.Parse(CBProbeDay.SelectedItem.ToString()),
+                    Int32.Parse(CBProbeMonth.SelectedItem.ToString()),
+                    Int32.Parse(CBProbeYear.SelectedItem.ToString()));
+                GroupChangeProbe.Visible = false;
+                GridProbes.ClearSelection();
+                GridProbes.Rows[GridProbes.Rows.Count - 1].Selected = true;
+            }
+            else
+            {
+                if (GridProbes.SelectedRows.Count > 0)
+                {
+                    _cont.ChangeProbe(SelectedEco(), SelectedProbe(), TBProbePlace.Text,
+                        Int32.Parse(CBProbeDay.SelectedItem.ToString()),
+                        Int32.Parse(CBProbeMonth.SelectedItem.ToString()),
+                        Int32.Parse(CBProbeYear.SelectedItem.ToString()));
+                }
+                GroupChangeProbe.Visible = false;
+            }
+        }
+        #endregion
+
+        #region user selects ecologist
+        private void GridEcologists_SelectionChanged(object sender, EventArgs e)
+        {
+            if (GridEcologists.SelectedRows.Count > 0)
+            {
+                _cont.EcologistSelected(SelectedEco());
+            }
+        }
+        #endregion
+
+        #region public fill methods (for controller)
         public void FillEcologists(List<string> ecoNames)
         {
             GridEcologists.Rows.Clear();
@@ -108,6 +225,7 @@ namespace TestTask
         }
         #endregion
 
+        #region public methods editing ecologists (for controller)
         public void DeleteEcologist(int index)
         {
             GridEcologists.Rows.RemoveAt(index);
@@ -121,53 +239,86 @@ namespace TestTask
             GridEcologists.Rows.Add(newName);
         }
 
-        private void BDeleteEcologist_Click(object sender, EventArgs e)
+        #endregion
+
+        #region public methods editing probes (for controller)
+        public void DeleteProbe(int index)
         {
-            List<int> indexes = new List<int>();
-            
-            foreach(DataGridViewRow row in GridEcologists.SelectedRows)
+            GridProbes.Rows.RemoveAt(index);
+        }
+        public void ChangeProbe(int index, string newPlace, string newDate)
+        {
+            GridProbes.Rows[index].SetValues(newPlace, newDate);
+        }
+        public void AddProbe(string newPlace, string newDate)
+        {
+            GridProbes.Rows.Add(newPlace, newDate);
+        }
+
+        #endregion
+
+
+
+        public void SetReportProgressBar(int percent)
+        {
+            PBReport.Visible = true;
+            PBReport.Value = percent;
+        }
+
+        public void HideReportProgressBar()
+        {
+            PBReport.Visible = false;
+        }
+
+        
+
+        #region auxuliary methods
+        void Message(string text)
+        {
+            StatusStrip.Text = text;
+        }
+
+        int SelectedEco()
+        {
+            DataGridViewRow row = GridEcologists.SelectedRows[0];
+            return GridEcologists.Rows.IndexOf(row);
+        }
+
+        int SelectedProbe()
+        {
+            DataGridViewRow row = GridProbes.SelectedRows[0];
+            return GridProbes.Rows.IndexOf(row);
+        }
+        void FillProbeComboBoxes()
+        {
+            for (int i = 1; i <= 31; i++)
+                CBProbeDay.Items.Add(i.ToString("D2"));
+            for (int i = 1; i <= 12; i++)
+                CBProbeMonth.Items.Add(i.ToString("D2"));
+            for (int i = 2000; i <= 2050; i++)
+                CBProbeYear.Items.Add(i.ToString("D4"));
+        }
+        #endregion
+
+        private void MIFormSimpleReport_Click(object sender, EventArgs e)
+        {
+            DialogSaveFile.Filter = "html|*.html";
+            DialogSaveFile.FileName = _cont.LastXmlFile.Substring(0
+                ,_cont.LastXmlFile.Length-3) + "html";
+            if (DialogSaveFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                indexes.Add(GridEcologists.Rows.IndexOf(row));
+                _cont.CreateSimpleReport(DialogSaveFile.FileName);
             }
-
-            _cont.DeleteEcologists(indexes);
-            
         }
 
-        private void BChangeEcologist_Click(object sender, EventArgs e)
+        private void MIFormExtendedReport_Click(object sender, EventArgs e)
         {
-            GroupChangeEco.Visible = !GroupChangeEco.Visible;
-            _addNewEcologist = false;
-            if (GridEcologists.SelectedRows.Count > 0)
-                TBEcoName.Text = GridEcologists.SelectedRows[0].Cells[0].Value.ToString();
-        }
-
-
-        private void BAddEcologist_Click(object sender, EventArgs e)
-        {
-            GroupChangeEco.Visible = !GroupChangeEco.Visible;
-            _addNewEcologist = true;
-            TBEcoName.Text = "эколог" + GridEcologists.Rows.Count.ToString();
-        }
-
-        private void BEcoOK_Click(object sender, EventArgs e)
-        {
-            if (_addNewEcologist)
+            DialogSaveFile.Filter = "*.html";
+            DialogSaveFile.FileName = _cont.LastXmlFile.Substring(0
+                , _cont.LastXmlFile.Length - 3) + "html";
+            if (DialogSaveFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                _cont.AddEcologist(TBEcoName.Text);
-                GroupChangeEco.Visible = false;
-                GridEcologists.ClearSelection();
-                GridEcologists.Rows[GridEcologists.Rows.Count - 1].Selected = true;
-            }
-            else
-            {
-                if(GridEcologists.SelectedRows.Count>0)
-                {
-                    DataGridViewRow row = GridEcologists.SelectedRows[0];
-                    _cont.ChangeEcologist(GridEcologists.Rows.IndexOf(row),
-                        TBEcoName.Text);
-                }
-                GroupChangeEco.Visible = false;
+                _cont.CreateExtendedReport(DialogSaveFile.FileName);
             }
         }
 
