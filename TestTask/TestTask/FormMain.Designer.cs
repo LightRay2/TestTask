@@ -30,6 +30,7 @@
         {
             this.MenuMain = new System.Windows.Forms.MenuStrip();
             this.данныеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MINewProject = new System.Windows.Forms.ToolStripMenuItem();
             this.MILoadData = new System.Windows.Forms.ToolStripMenuItem();
             this.MISaveData = new System.Windows.Forms.ToolStripMenuItem();
             this.MISaveDataAs = new System.Windows.Forms.ToolStripMenuItem();
@@ -37,7 +38,6 @@
             this.MIFormSimpleReport = new System.Windows.Forms.ToolStripMenuItem();
             this.MIFormExtendedReport = new System.Windows.Forms.ToolStripMenuItem();
             this.GridEcologists = new System.Windows.Forms.DataGridView();
-            this.EcoName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.GridProbes = new System.Windows.Forms.DataGridView();
             this.Place = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Date = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -65,14 +65,16 @@
             this.GroupChangeProbe = new System.Windows.Forms.GroupBox();
             this.DialogSaveFile = new System.Windows.Forms.SaveFileDialog();
             this.DialogOpenFile = new System.Windows.Forms.OpenFileDialog();
-            this.StatusStrip = new System.Windows.Forms.StatusStrip();
-            this.MINewProject = new System.Windows.Forms.ToolStripMenuItem();
+            this.StatusStripMain = new System.Windows.Forms.StatusStrip();
+            this.StatusStrip = new System.Windows.Forms.ToolStripStatusLabel();
             this.PBReport = new System.Windows.Forms.ProgressBar();
+            this.EcoName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MenuMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GridEcologists)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.GridProbes)).BeginInit();
             this.GroupChangeEco.SuspendLayout();
             this.GroupChangeProbe.SuspendLayout();
+            this.StatusStripMain.SuspendLayout();
             this.SuspendLayout();
             // 
             // MenuMain
@@ -96,6 +98,13 @@
             this.данныеToolStripMenuItem.Name = "данныеToolStripMenuItem";
             this.данныеToolStripMenuItem.Size = new System.Drawing.Size(84, 25);
             this.данныеToolStripMenuItem.Text = "Данные";
+            // 
+            // MINewProject
+            // 
+            this.MINewProject.Name = "MINewProject";
+            this.MINewProject.Size = new System.Drawing.Size(229, 26);
+            this.MINewProject.Text = "Новый Проект";
+            this.MINewProject.Click += new System.EventHandler(this.MINewProject_Click);
             // 
             // MILoadData
             // 
@@ -149,25 +158,20 @@
             this.GridEcologists.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.GridEcologists.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.EcoName});
-            this.GridEcologists.Location = new System.Drawing.Point(64, 81);
+            this.GridEcologists.Location = new System.Drawing.Point(50, 80);
             this.GridEcologists.Name = "GridEcologists";
             this.GridEcologists.RowHeadersVisible = false;
             this.GridEcologists.RowTemplate.Height = 28;
             this.GridEcologists.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.GridEcologists.Size = new System.Drawing.Size(221, 170);
+            this.GridEcologists.Size = new System.Drawing.Size(304, 247);
             this.GridEcologists.TabIndex = 1;
             this.GridEcologists.SelectionChanged += new System.EventHandler(this.GridEcologists_SelectionChanged);
-            // 
-            // EcoName
-            // 
-            this.EcoName.HeaderText = "ФИО";
-            this.EcoName.Name = "EcoName";
-            this.EcoName.ReadOnly = true;
-            this.EcoName.Width = 200;
             // 
             // GridProbes
             // 
             this.GridProbes.AllowUserToAddRows = false;
+            this.GridProbes.AllowUserToDeleteRows = false;
+            this.GridProbes.AllowUserToResizeRows = false;
             this.GridProbes.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.GridProbes.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Place,
@@ -177,7 +181,7 @@
             this.GridProbes.RowHeadersVisible = false;
             this.GridProbes.RowTemplate.Height = 28;
             this.GridProbes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.GridProbes.Size = new System.Drawing.Size(428, 174);
+            this.GridProbes.Size = new System.Drawing.Size(404, 250);
             this.GridProbes.TabIndex = 2;
             // 
             // Place
@@ -196,7 +200,7 @@
             // LEcologists
             // 
             this.LEcologists.AutoSize = true;
-            this.LEcologists.Location = new System.Drawing.Point(67, 45);
+            this.LEcologists.Location = new System.Drawing.Point(50, 50);
             this.LEcologists.Name = "LEcologists";
             this.LEcologists.Size = new System.Drawing.Size(77, 20);
             this.LEcologists.TabIndex = 3;
@@ -213,9 +217,9 @@
             // 
             // BDeleteEcologist
             // 
-            this.BDeleteEcologist.Location = new System.Drawing.Point(61, 252);
+            this.BDeleteEcologist.Location = new System.Drawing.Point(50, 350);
             this.BDeleteEcologist.Name = "BDeleteEcologist";
-            this.BDeleteEcologist.Size = new System.Drawing.Size(224, 33);
+            this.BDeleteEcologist.Size = new System.Drawing.Size(207, 30);
             this.BDeleteEcologist.TabIndex = 5;
             this.BDeleteEcologist.Text = "Удалить запись";
             this.BDeleteEcologist.UseVisualStyleBackColor = true;
@@ -223,7 +227,7 @@
             // 
             // BChangeEcologist
             // 
-            this.BChangeEcologist.Location = new System.Drawing.Point(61, 305);
+            this.BChangeEcologist.Location = new System.Drawing.Point(50, 400);
             this.BChangeEcologist.Name = "BChangeEcologist";
             this.BChangeEcologist.Size = new System.Drawing.Size(207, 30);
             this.BChangeEcologist.TabIndex = 6;
@@ -233,9 +237,9 @@
             // 
             // BDeleteProbe
             // 
-            this.BDeleteProbe.Location = new System.Drawing.Point(416, 257);
+            this.BDeleteProbe.Location = new System.Drawing.Point(420, 350);
             this.BDeleteProbe.Name = "BDeleteProbe";
-            this.BDeleteProbe.Size = new System.Drawing.Size(159, 28);
+            this.BDeleteProbe.Size = new System.Drawing.Size(207, 30);
             this.BDeleteProbe.TabIndex = 7;
             this.BDeleteProbe.Text = "Удалить запись";
             this.BDeleteProbe.UseVisualStyleBackColor = true;
@@ -243,9 +247,9 @@
             // 
             // BChangeProbe
             // 
-            this.BChangeProbe.Location = new System.Drawing.Point(413, 291);
+            this.BChangeProbe.Location = new System.Drawing.Point(420, 400);
             this.BChangeProbe.Name = "BChangeProbe";
-            this.BChangeProbe.Size = new System.Drawing.Size(162, 36);
+            this.BChangeProbe.Size = new System.Drawing.Size(207, 30);
             this.BChangeProbe.TabIndex = 8;
             this.BChangeProbe.Text = "Изменить запись";
             this.BChangeProbe.UseVisualStyleBackColor = true;
@@ -253,16 +257,16 @@
             // 
             // TBEcoName
             // 
-            this.TBEcoName.Location = new System.Drawing.Point(16, 38);
+            this.TBEcoName.Location = new System.Drawing.Point(18, 43);
             this.TBEcoName.Name = "TBEcoName";
-            this.TBEcoName.Size = new System.Drawing.Size(126, 26);
+            this.TBEcoName.Size = new System.Drawing.Size(218, 26);
             this.TBEcoName.TabIndex = 9;
             // 
             // BEcoOK
             // 
-            this.BEcoOK.Location = new System.Drawing.Point(185, 39);
+            this.BEcoOK.Location = new System.Drawing.Point(242, 43);
             this.BEcoOK.Name = "BEcoOK";
-            this.BEcoOK.Size = new System.Drawing.Size(75, 25);
+            this.BEcoOK.Size = new System.Drawing.Size(56, 26);
             this.BEcoOK.TabIndex = 10;
             this.BEcoOK.Text = "ОК";
             this.BEcoOK.UseVisualStyleBackColor = true;
@@ -356,9 +360,9 @@
             // 
             // BAddEcologist
             // 
-            this.BAddEcologist.Location = new System.Drawing.Point(64, 350);
+            this.BAddEcologist.Location = new System.Drawing.Point(50, 450);
             this.BAddEcologist.Name = "BAddEcologist";
-            this.BAddEcologist.Size = new System.Drawing.Size(177, 30);
+            this.BAddEcologist.Size = new System.Drawing.Size(207, 30);
             this.BAddEcologist.TabIndex = 21;
             this.BAddEcologist.Text = "Добавить запись";
             this.BAddEcologist.UseVisualStyleBackColor = true;
@@ -366,9 +370,9 @@
             // 
             // BAddProbe
             // 
-            this.BAddProbe.Location = new System.Drawing.Point(416, 350);
+            this.BAddProbe.Location = new System.Drawing.Point(420, 450);
             this.BAddProbe.Name = "BAddProbe";
-            this.BAddProbe.Size = new System.Drawing.Size(163, 30);
+            this.BAddProbe.Size = new System.Drawing.Size(207, 30);
             this.BAddProbe.TabIndex = 22;
             this.BAddProbe.Text = "Добавить запись";
             this.BAddProbe.UseVisualStyleBackColor = true;
@@ -379,9 +383,9 @@
             this.GroupChangeEco.Controls.Add(this.BEcoOK);
             this.GroupChangeEco.Controls.Add(this.TBEcoName);
             this.GroupChangeEco.Controls.Add(this.LEcoName);
-            this.GroupChangeEco.Location = new System.Drawing.Point(61, 397);
+            this.GroupChangeEco.Location = new System.Drawing.Point(50, 507);
             this.GroupChangeEco.Name = "GroupChangeEco";
-            this.GroupChangeEco.Size = new System.Drawing.Size(266, 86);
+            this.GroupChangeEco.Size = new System.Drawing.Size(304, 86);
             this.GroupChangeEco.TabIndex = 23;
             this.GroupChangeEco.TabStop = false;
             // 
@@ -396,7 +400,7 @@
             this.GroupChangeProbe.Controls.Add(this.LProbePlace);
             this.GroupChangeProbe.Controls.Add(this.BProbeOK);
             this.GroupChangeProbe.Controls.Add(this.TBProbePlace);
-            this.GroupChangeProbe.Location = new System.Drawing.Point(414, 385);
+            this.GroupChangeProbe.Location = new System.Drawing.Point(420, 522);
             this.GroupChangeProbe.Name = "GroupChangeProbe";
             this.GroupChangeProbe.Size = new System.Drawing.Size(404, 141);
             this.GroupChangeProbe.TabIndex = 24;
@@ -406,20 +410,21 @@
             // 
             this.DialogOpenFile.FileName = "openFileDialog1";
             // 
+            // StatusStripMain
+            // 
+            this.StatusStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.StatusStrip});
+            this.StatusStripMain.Location = new System.Drawing.Point(0, 665);
+            this.StatusStripMain.Name = "StatusStripMain";
+            this.StatusStripMain.Size = new System.Drawing.Size(923, 26);
+            this.StatusStripMain.TabIndex = 25;
+            this.StatusStripMain.Text = "готово";
+            // 
             // StatusStrip
             // 
-            this.StatusStrip.Location = new System.Drawing.Point(0, 600);
             this.StatusStrip.Name = "StatusStrip";
-            this.StatusStrip.Size = new System.Drawing.Size(923, 22);
-            this.StatusStrip.TabIndex = 25;
-            this.StatusStrip.Text = "готово";
-            // 
-            // MINewProject
-            // 
-            this.MINewProject.Name = "MINewProject";
-            this.MINewProject.Size = new System.Drawing.Size(229, 26);
-            this.MINewProject.Text = "Новый Проект";
-            this.MINewProject.Click += new System.EventHandler(this.MINewProject_Click);
+            this.StatusStrip.Size = new System.Drawing.Size(167, 21);
+            this.StatusStrip.Text = "toolStripStatusLabel1";
             // 
             // PBReport
             // 
@@ -430,13 +435,20 @@
             this.PBReport.TabIndex = 26;
             this.PBReport.Value = 25;
             // 
+            // EcoName
+            // 
+            this.EcoName.HeaderText = "ФИО";
+            this.EcoName.Name = "EcoName";
+            this.EcoName.ReadOnly = true;
+            this.EcoName.Width = 300;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(923, 622);
+            this.ClientSize = new System.Drawing.Size(923, 691);
             this.Controls.Add(this.PBReport);
-            this.Controls.Add(this.StatusStrip);
+            this.Controls.Add(this.StatusStripMain);
             this.Controls.Add(this.GroupChangeProbe);
             this.Controls.Add(this.GroupChangeEco);
             this.Controls.Add(this.BAddProbe);
@@ -453,6 +465,7 @@
             this.MainMenuStrip = this.MenuMain;
             this.Name = "FormMain";
             this.Text = "FormMain";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Load += new System.EventHandler(this.FormMain_Load);
             this.MenuMain.ResumeLayout(false);
             this.MenuMain.PerformLayout();
@@ -462,6 +475,8 @@
             this.GroupChangeEco.PerformLayout();
             this.GroupChangeProbe.ResumeLayout(false);
             this.GroupChangeProbe.PerformLayout();
+            this.StatusStripMain.ResumeLayout(false);
+            this.StatusStripMain.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -503,12 +518,13 @@
         private System.Windows.Forms.GroupBox GroupChangeProbe;
         private System.Windows.Forms.SaveFileDialog DialogSaveFile;
         private System.Windows.Forms.OpenFileDialog DialogOpenFile;
-        private System.Windows.Forms.DataGridViewTextBoxColumn EcoName;
         private System.Windows.Forms.DataGridViewTextBoxColumn Place;
         private System.Windows.Forms.DataGridViewTextBoxColumn Date;
-        private System.Windows.Forms.StatusStrip StatusStrip;
+        private System.Windows.Forms.StatusStrip StatusStripMain;
         private System.Windows.Forms.ToolStripMenuItem MINewProject;
         private System.Windows.Forms.ProgressBar PBReport;
+        private System.Windows.Forms.ToolStripStatusLabel StatusStrip;
+        private System.Windows.Forms.DataGridViewTextBoxColumn EcoName;
 
     }
 }

@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.IO;
 
 using TestTask.Properties;
 
@@ -13,8 +14,21 @@ namespace TestTask
 {
     public partial class FormMain : Form
     {
-        Controller _cont;
+        /* Как все работает:
+         * У формы есть только ссылка на контроллер. В ответ на любое действие пользователя
+         * форма вызывает соответствующий public-метод контроллера. Контроллер, в свою очередь, изменяет 
+         * данные и вызывает один из публичных методов формы для отображения изменений. Для общения с 
+         * пользователем контроллер вызывает один из методов - StatusMessage(для вывода в статус бар) или
+         * ErrorMessage - для вывода сообщения в отдельном окошке.
+         * 
+         * Контроллеру в конструктор передается 2 класса-помощника - класс для работы с xml файлами и
+         * класс для формирования html отчета с использованием xsl. (сами xsl-файлы лежат в ресурсах проекта) 
+         
 
+
+         */
+        #region init
+        Controller _cont;
 
         //Используя одни и те же компоненты,
         //можно изменять и добавлять новую запись. Это переключатели.
@@ -30,8 +44,6 @@ namespace TestTask
             _cont = ControllerFactory.CreateController(this);
         }
 
-        
-
         private void FormMain_Load(object sender, EventArgs e)
         {
             GroupChangeEco.Visible = false;
@@ -43,18 +55,22 @@ namespace TestTask
                 GroupChangeProbe.Location.Y + GroupChangeProbe.Size.Height + 200
                 );
         }
+        #endregion
 
-        
 
-        #region Main menu - data(to controller)
+
+        #region user clicks data menu (to controller)
+
         private void MINewProject_Click(object sender, EventArgs e)
         {
+            if (_cont.TherIsNotSavedData) OfferUserToSaveData();
             _cont.StartNewProject();
         }
 
         private void MILoadData_Click(object sender, EventArgs e)
         {
-            DialogOpenFile.Filter = "*.xml";
+            if (_cont.TherIsNotSavedData) OfferUserToSaveData();
+            DialogOpenFile.Filter = "xml|*.xml";
             DialogOpenFile.FileName = _cont.LastXmlFile;
             if (DialogOpenFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -64,7 +80,7 @@ namespace TestTask
 
         private void MISaveDataAs_Click(object sender, EventArgs e)
         {
-            DialogSaveFile.Filter = "*.xml";
+            DialogSaveFile.Filter = "xml|*.xml";
             DialogSaveFile.FileName = _cont.LastXmlFile;
             if (DialogSaveFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -87,6 +103,8 @@ namespace TestTask
                 indexes.Add(GridEcologists.Rows.IndexOf(row));
             }
             _cont.DeleteEcologists(indexes);
+            if(GridEcologists.SelectedRows.Count==0)
+                _cont.EcologistSelected(-1);
         }
 
         private void BChangeEcologist_Click(object sender, EventArgs e)
@@ -141,6 +159,7 @@ namespace TestTask
 
         private void BChangeProbe_Click(object sender, EventArgs e)
         {
+            if (SelectedEco() == -1) return;
             if (GridProbes.SelectedRows.Count > 0)
             {
                 TBProbePlace.Text = GridProbes.SelectedRows[0].Cells[0].Value.ToString();
@@ -156,6 +175,7 @@ namespace TestTask
 
         private void BAddProbe_Click(object sender, EventArgs e)
         {
+            if (SelectedEco() == -1) return;
             TBProbePlace.Text = "место" + GridProbes.Rows.Count.ToString();
             CBProbeDay.SelectedIndex = 0;
             CBProbeMonth.SelectedIndex = 0;
@@ -191,7 +211,7 @@ namespace TestTask
         }
         #endregion
 
-        #region user selects ecologist
+        #region user selects ecologist (to controller)
         private void GridEcologists_SelectionChanged(object sender, EventArgs e)
         {
             if (GridEcologists.SelectedRows.Count > 0)
@@ -201,7 +221,54 @@ namespace TestTask
         }
         #endregion
 
-        #region public fill methods (for controller)
+        #region user wants to create report (to controller)
+        private void MIFormSimpleReport_Click(object sender, EventArgs e)
+        {
+            DialogSaveFile.Filter = "html|*.html";
+            if (_cont.LastXmlFile.Length > 3)
+            {
+                DialogSaveFile.FileName = _cont.LastXmlFile.Substring(0
+                    , _cont.LastXmlFile.Length - 3) + "html";
+            }
+            else
+            {
+                DialogSaveFile.FileName = "Report.html";
+            }
+            if (DialogSaveFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                _cont.CreateSimpleReport(DialogSaveFile.FileName);
+            }
+        }
+
+        private void MIFormExtendedReport_Click(object sender, EventArgs e)
+        {
+            DialogSaveFile.Filter = "html|*.html";
+            if (_cont.LastXmlFile.Length > 4)
+            {
+                DialogSaveFile.FileName = _cont.LastXmlFile.Substring(0
+                    , _cont.LastXmlFile.Length - 4) + "ExtendedReport.html";
+            }
+            else
+            {
+                DialogSaveFile.FileName = "ExtendedReport.html";
+            }
+            if (DialogSaveFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                _cont.CreateExtendedReport(DialogSaveFile.FileName);
+            }
+        }
+        #endregion
+
+        #region form closing
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_cont.TherIsNotSavedData) OfferUserToSaveData();
+        }
+        #endregion
+
+
+
+        #region public fill data grids methods (for controller)
         public void FillEcologists(List<string> ecoNames)
         {
             GridEcologists.Rows.Clear();
@@ -257,8 +324,7 @@ namespace TestTask
 
         #endregion
 
-
-
+        #region public methods for progress bar (for controller)
         public void SetReportProgressBar(int percent)
         {
             PBReport.Visible = true;
@@ -269,25 +335,53 @@ namespace TestTask
         {
             PBReport.Visible = false;
         }
+        #endregion
 
-        
-
-        #region auxuliary methods
-        void Message(string text)
+        #region public methods - messages for user (for controller)
+        public void StatusMessage(string text)
         {
             StatusStrip.Text = text;
         }
 
+        public void ErrorMessage(string text)
+        {
+            MessageBox.Show(text);
+        }
+        #endregion
+
+
+
+        #region auxuliary methods 
+
+        void OfferUserToSaveData()
+        {
+            DialogResult dr = MessageBox.Show(
+                "У вас есть несохраненные данные. Сохранить?", 
+                "Предупреждение", MessageBoxButtons.YesNo);
+            if (dr == System.Windows.Forms.DialogResult.Yes)
+            {
+                MISaveDataAs_Click(this, new EventArgs());
+            }
+        }
+
         int SelectedEco()
         {
-            DataGridViewRow row = GridEcologists.SelectedRows[0];
-            return GridEcologists.Rows.IndexOf(row);
+            if (GridEcologists.SelectedRows.Count > 0)
+            {
+                DataGridViewRow row = GridEcologists.SelectedRows[0];
+                return GridEcologists.Rows.IndexOf(row);
+            }
+            else return -1;
         }
 
         int SelectedProbe()
         {
-            DataGridViewRow row = GridProbes.SelectedRows[0];
-            return GridProbes.Rows.IndexOf(row);
+            if (GridProbes.SelectedRows.Count > 0)
+            {
+                DataGridViewRow row = GridProbes.SelectedRows[0];
+                return GridProbes.Rows.IndexOf(row);
+            }
+            else return -1;
         }
         void FillProbeComboBoxes()
         {
@@ -300,27 +394,6 @@ namespace TestTask
         }
         #endregion
 
-        private void MIFormSimpleReport_Click(object sender, EventArgs e)
-        {
-            DialogSaveFile.Filter = "html|*.html";
-            DialogSaveFile.FileName = _cont.LastXmlFile.Substring(0
-                ,_cont.LastXmlFile.Length-3) + "html";
-            if (DialogSaveFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                _cont.CreateSimpleReport(DialogSaveFile.FileName);
-            }
-        }
-
-        private void MIFormExtendedReport_Click(object sender, EventArgs e)
-        {
-            DialogSaveFile.Filter = "*.html";
-            DialogSaveFile.FileName = _cont.LastXmlFile.Substring(0
-                , _cont.LastXmlFile.Length - 3) + "html";
-            if (DialogSaveFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                _cont.CreateExtendedReport(DialogSaveFile.FileName);
-            }
-        }
 
     }
 }

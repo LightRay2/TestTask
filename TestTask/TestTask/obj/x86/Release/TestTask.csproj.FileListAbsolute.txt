@@ -1,0 +1,9 @@
+D:\GIT\TestTask\TestTask\bin\Release\TestTask.exe
+D:\GIT\TestTask\TestTask\bin\Release\TestTask.pdb
+D:\GIT\TestTask\TestTask\obj\x86\Release\ResolveAssemblyReference.cache
+D:\GIT\TestTask\TestTask\obj\x86\Release\TestTask.FormMain.resources
+D:\GIT\TestTask\TestTask\obj\x86\Release\TestTask.Properties.Resources.resources
+D:\GIT\TestTask\TestTask\obj\x86\Release\GenerateResource.read.1.tlog
+D:\GIT\TestTask\TestTask\obj\x86\Release\GenerateResource.write.1.tlog
+D:\GIT\TestTask\TestTask\obj\x86\Release\TestTask.exe
+D:\GIT\TestTask\TestTask\obj\x86\Release\TestTask.pdb

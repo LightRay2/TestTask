@@ -78,7 +78,7 @@ namespace TestTask.Properties {
         ///
         ///          td {
         ///          border: 1px solid;
-        ///          padding: 4px 8px 4px 8px;
+        ///          padding: 2px 8px 2px 8px;
         ///          font-size : medium;
         ///      [rest of string was truncated]&quot;;.
         /// </summary>
@@ -106,7 +106,7 @@ namespace TestTask.Properties {
         ///
         ///          td {
         ///          border: 1px solid;
-        ///          padding: 4px 30px 4px 8px;
+        ///          padding: 2px 30px 2px 8px;
         ///          font-size : medium;
         ///     [rest of string was truncated]&quot;;.
         /// </summary>
